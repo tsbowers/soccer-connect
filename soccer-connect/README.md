@@ -1,5 +1,5 @@
 # soccer-connect
-Authors- Erick Flores, Angela Hubbard, and Trevor S Bowers
+Authors: Erick Flores, Angela Hubbard, and Trevor S Bowers
 
 The app will be a platform where soccer players create a profile so they can create join update and erase pickup soccer games.
 
