@@ -19,3 +19,7 @@ export interface CreateGameInput {
   capacity: number;
   description?: string;
 }
+
+export interface UpdateGameInput extends CreateGameInput {
+  id: string;
+}
