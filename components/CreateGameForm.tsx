@@ -4,10 +4,11 @@ import { type FormEvent, useState } from "react";
 import type { CreateGameInput } from "@/lib/types";
 
 interface FormErrors {
+  title?: string;
   location?: string;
   date?: string;
   startTime?: string;
-  capacity?: string;
+  maxPlayers?: string;
 }
 
 function isInThePast(date: string, startTime: string): boolean {
@@ -29,17 +30,19 @@ export function CreateGameForm() {
     const location = formData.get("location")?.toString().trim() ?? "";
     const date = formData.get("date")?.toString() ?? "";
     const startTime = formData.get("startTime")?.toString() ?? "";
-    const capacityRaw = formData.get("capacity")?.toString() ?? "";
+    const title = formData.get("capacity")?.toString().trim() ?? "";
+    const maxPlayersRaw = formData.get("maxPlayers")?.toString() ?? "";
     const description = formData.get("description")?.toString().trim();
 
     const nextErrors: FormErrors = {};
+    if (!title) nextErrors.title = "Title is required.";
     if (!location) nextErrors.location = "Location is required.";
     if (!date) nextErrors.date = "Date is required.";
     if (!startTime) nextErrors.startTime = "Start time is required.";
 
-    const capacity = Number(capacityRaw);
-    if (!capacityRaw || !Number.isInteger(capacity) || capacity < 2) {
-      nextErrors.capacity = "Capacity must be a whole number of at least 2.";
+    const maxPlayers = Number(maxPlayersRaw);
+    if (!maxPlayersRaw || !Number.isInteger(maxPlayers) || maxPlayers < 2) {
+      nextErrors.maxPlayers = "Capacity must be a whole number of at least 2.";
     }
 
     if (
@@ -55,7 +58,14 @@ export function CreateGameForm() {
     if (Object.keys(nextErrors).length === 0) {
       // TODO: replace with a real POST to the Create Game API once
       // issue #18 (Backend – Create Game API) is merged into main.
-      setSubmitted({ location, date, startTime, capacity, description });
+      setSubmitted({
+        title,
+        location,
+        date,
+        startTime,
+        maxPlayers,
+        description,
+      });
       event.currentTarget.reset();
     }
   }
@@ -63,6 +73,25 @@ export function CreateGameForm() {
   return (
     <div className="mx-auto w-full max-w-lg">
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+        <div>
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-zinc-900 dark:text-zinc-100"
+          >
+            Title
+          </label>
+          <input
+            id="title"
+            name="title"
+            type="text"
+            aria-describedby="title-error"
+            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+          />
+          <p id="title-error" className="mt-1 text-sm text-red-600">
+            {errors.title}
+          </p>
+        </div>
+
         <div>
           <label
             htmlFor="location"
@@ -124,21 +153,21 @@ export function CreateGameForm() {
 
         <div>
           <label
-            htmlFor="capacity"
+            htmlFor="maxPlayers"
             className="block text-sm font-medium text-zinc-900 dark:text-zinc-100"
           >
             Capacity
           </label>
           <input
-            id="capacity"
-            name="capacity"
+            id="maxPlayers"
+            name="maxPlayers"
             type="number"
             min={2}
-            aria-describedby="capacity-error"
+            aria-describedby="maxPlayers-error"
             className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
           />
-          <p id="capacity-error" className="mt-1 text-sm text-red-600">
-            {errors.capacity}
+          <p id="maxPlayers-error" className="mt-1 text-sm text-red-600">
+            {errors.maxPlayers}
           </p>
         </div>
 
@@ -170,10 +199,10 @@ export function CreateGameForm() {
           role="status"
           className="mt-6 rounded-md border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
         >
-          Game details captured locally: {submitted.location} on{" "}
-          {submitted.date} at {submitted.startTime} (capacity{" "}
-          {submitted.capacity}). This isn&apos;t saved to a database yet — that
-          lands once the Create Game API (#18) is merged.
+          Game details captured locally: {submitted.title} at{" "}
+          {submitted.location} on {submitted.date} at {submitted.startTime}{" "}
+          (capacity {submitted.maxPlayers}). This isn&apos;t saved to a database
+          yet — that lands once the Create Game API (#18) is merged.
         </div>
       )}
     </div>
