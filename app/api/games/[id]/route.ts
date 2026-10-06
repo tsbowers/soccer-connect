@@ -27,4 +27,4 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
         return NextResponse.json({ error: "Game not found" }, { status: 404 });
     }
     return NextResponse.json({ message: "Game deleted successfully" }, { status: 200 });
-}
+};
