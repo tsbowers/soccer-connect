@@ -1,18 +1,7 @@
-import { getGames } from '@/app/lib/db';
+import { GameDirectory } from "@/components/GameDirectory";
 
-export default async function GamePage() {
-    const games = await getGames(); 
+export const metadata = { title: "Find a game — SoccerConnect" };
 
-    return (
-         <div>
-      <h1>Pickup Games</h1>
-      <ul>
-        {games.map(g => (
-          <li key={g.id}>
-            {g.title} — {g.game_date} @ {g.game_time} — {g.location}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+export default function GamesPage() {
+  return <GameDirectory />;
 }
