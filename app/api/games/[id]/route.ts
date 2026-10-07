@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getGameById, updateGame, deleteGame } from "@/lib/server/game";
+import { getGameById, updateGame, deleteGame } from "@/app/lib/db";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
