@@ -85,3 +85,50 @@ export async function deleteGame(id: string): Promise<boolean> {
   return result.rows.length > 0;
 }
 
+//join a game
+export async function joinGame(game_id: string, user_id: string) {
+  // Check if already joined
+  const existing = await sql`
+    SELECT * FROM game_player
+    WHERE game_id = ${game_id} AND user_id = ${user_id};
+  `;
+
+  if (existing.rows.length > 0) {
+    return existing.rows[0]; // already joined
+  }
+
+  // Check if game is full
+  const count = await sql`
+    SELECT COUNT(*) FROM game_player
+    WHERE game_id = ${game_id};
+  `;
+
+  const game = await sql`
+    SELECT max_players FROM pickup_game
+    WHERE id = ${game_id};
+  `;
+
+  if (Number(count.rows[0].count) >= game.rows[0].max_players) {
+    return null; // game full
+  }
+
+  // Insert player
+  const result = await sql`
+    INSERT INTO game_player (game_id, user_id, status, joined_at)
+    VALUES (${game_id}, ${user_id}, 'joined', NOW())
+    RETURNING *;
+  `;
+
+  return result.rows[0];
+}
+
+//leave a game
+export async function leaveGame(game_id: string, user_id: string) {
+  const result = await sql`
+    DELETE FROM game_player
+    WHERE game_id = ${game_id} AND user_id = ${user_id}
+    RETURNING *;
+  `;
+
+  return result.rows[0] || null;
+}

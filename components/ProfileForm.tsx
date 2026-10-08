@@ -94,7 +94,7 @@ export function ProfileForm() {
             id="displayName"
             name="displayName"
             type="text"
-            defaultValue={user.displayName}
+            defaultValue={user.name}
             autoComplete="nickname"
             aria-invalid={Boolean(errors.displayName)}
             aria-describedby={describedBy("displayName", errors.displayName)}
