@@ -1,47 +1,38 @@
 import { sql } from "@vercel/postgres";
+import { dbUserToUser } from "@/lib/db-mappers";
 import type { ProfileInput } from "@/lib/user-types";
+import type { User } from "@/lib/user-types";
 
-export async function createProfile(userId: string, input: ProfileInput) {
-  const { displayName, preferredPosition, bio } = input;
+// The database has no separate "profile" table: profile fields live on the
+// users table, so these helpers read and write users directly.
 
+export async function getProfileById(userId: string): Promise<User | null> {
   const result = await sql`
-    INSERT INTO profile (id, name, preferred_position, bio)
-    VALUES (${userId}, ${displayName}, ${preferredPosition}, ${bio})
+    SELECT * FROM users WHERE id = ${userId};
+  `;
+  return result.rows.length > 0 ? dbUserToUser(result.rows[0]) : null;
+}
+
+export async function updateProfile(
+  userId: string,
+  input: ProfileInput,
+): Promise<User | null> {
+  const result = await sql`
+    UPDATE users
+    SET name = ${input.displayName},
+        preferred_position = ${input.preferredPosition},
+        bio = ${input.bio}
+    WHERE id = ${userId}
     RETURNING *;
   `;
-
-  return result.rows[0];
+  return result.rows.length > 0 ? dbUserToUser(result.rows[0]) : null;
 }
 
-export async function updateProfile(userId: string, input: ProfileInput) {
-  const { displayName, preferredPosition, bio } = input;
-
+export async function deleteProfile(userId: string): Promise<boolean> {
   const result = await sql`
-    UPDATE profile
-    SET name = ${displayName},
-        preferred_position = ${preferredPosition},
-        bio = ${bio}
-    WHERE user_id = ${userId}
-    RETURNING *;
+    DELETE FROM users
+    WHERE id = ${userId}
+    RETURNING id;
   `;
-
-  return result.rows[0];
-}
-
-export async function getProfileById(userId: string) {
-  const result = await sql`
-    SELECT * FROM profile
-    WHERE user_id = ${userId};
-  `;
-
-  return result.rows[0] ?? null;
-}
-export async function deleteProfile(userId: string) {
-  const result = await sql`
-    DELETE FROM profile
-    WHERE user_id = ${userId}
-    RETURNING user_id;
-  `;
-
   return result.rows.length > 0;
 }

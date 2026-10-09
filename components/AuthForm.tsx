@@ -101,16 +101,23 @@ export function AuthForm({ mode }: { mode: Mode }) {
         <FormError message={formError} />
 
         {mode === "signup" && (
-          <Field id="displayName" label="Display name" error={errors.displayName}
-            hint="Other players see this name on games you join.">
+          <Field
+            id="displayName"
+            label="Display name"
+            error={errors.displayName}
+            hint="Other players see this name on games you join."
+          >
             <input
               id="displayName"
               name="displayName"
               type="text"
               autoComplete="nickname"
               aria-invalid={Boolean(errors.displayName)}
-              aria-describedby={describedBy("displayName", errors.displayName,
-                "Other players see this name on games you join.")}
+              aria-describedby={describedBy(
+                "displayName",
+                errors.displayName,
+                "Other players see this name on games you join.",
+              )}
               className={inputClass}
             />
           </Field>
@@ -128,28 +135,44 @@ export function AuthForm({ mode }: { mode: Mode }) {
           />
         </Field>
 
-        <Field id="password" label="Password" error={errors.password}
-          hint={mode === "signup" ? "At least 8 characters." : undefined}>
+        <Field
+          id="password"
+          label="Password"
+          error={errors.password}
+          hint={mode === "signup" ? "At least 8 characters." : undefined}
+        >
           <input
             id="password"
             name="password"
             type="password"
-            autoComplete={mode === "signup" ? "new-password" : "current-password"}
+            autoComplete={
+              mode === "signup" ? "new-password" : "current-password"
+            }
             aria-invalid={Boolean(errors.password)}
-            aria-describedby={describedBy("password", errors.password,
-              mode === "signup" ? "At least 8 characters." : undefined)}
+            aria-describedby={describedBy(
+              "password",
+              errors.password,
+              mode === "signup" ? "At least 8 characters." : undefined,
+            )}
             className={inputClass}
           />
         </Field>
 
-        <button type="submit" disabled={submitting} className={primaryButtonClass}>
+        <button
+          type="submit"
+          disabled={submitting}
+          className={primaryButtonClass}
+        >
           {submitting ? copy.pending : copy.submit}
         </button>
       </form>
 
       <p className="mt-6 text-sm text-muted">
         {copy.switchText}{" "}
-        <Link href={copy.switchLink} className="font-medium text-turf-text underline">
+        <Link
+          href={copy.switchLink}
+          className="font-medium text-turf-text underline"
+        >
           {copy.switchLabel}
         </Link>
       </p>

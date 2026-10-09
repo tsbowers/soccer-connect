@@ -5,7 +5,11 @@ import { GameCard } from "@/components/GameCard";
 import { GameFiltersForm } from "@/components/GameFiltersForm";
 import { secondaryButtonClass } from "@/components/ui";
 import { errorMessage, api } from "@/lib/api";
-import { EMPTY_FILTERS, hasActiveFilters, type GameFilters } from "@/lib/filters";
+import {
+  EMPTY_FILTERS,
+  hasActiveFilters,
+  type GameFilters,
+} from "@/lib/filters";
 import type { Game } from "@/lib/types";
 
 interface Result {
@@ -47,7 +51,8 @@ export function GameDirectory() {
     <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
       <h1 className="text-2xl font-semibold">Find a pickup game</h1>
       <p className="mt-1 text-muted">
-        Upcoming games near you. Narrow the list by location, date, or start time.
+        Upcoming games near you. Narrow the list by location, date, or start
+        time.
       </p>
 
       <div className="mt-6">
@@ -55,10 +60,17 @@ export function GameDirectory() {
       </div>
 
       <div className="mt-6" aria-live="polite">
-        {loading && <p role="status" className="text-muted">Loading games…</p>}
+        {loading && (
+          <p role="status" className="text-muted">
+            Loading games…
+          </p>
+        )}
 
         {!loading && result?.error && (
-          <div role="alert" className="rounded-lg border border-red-300 bg-red-50 p-4 text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
+          <div
+            role="alert"
+            className="rounded-lg border border-red-300 bg-red-50 p-4 text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200"
+          >
             <p>{result.error}</p>
             <button
               type="button"
