@@ -50,9 +50,18 @@ export async function POST(request: Request) {
       ? body.title.trim()
       : location;
 
-  if (!location || !gameDate || !gameTime || !Number.isInteger(capacity) || capacity < 2) {
+  if (
+    !location ||
+    !gameDate ||
+    !gameTime ||
+    !Number.isInteger(capacity) ||
+    capacity < 2
+  ) {
     return NextResponse.json(
-      { error: "Location, date, time, and a capacity of at least 2 are required." },
+      {
+        error:
+          "Location, date, time, and a capacity of at least 2 are required.",
+      },
       { status: 400 },
     );
   }

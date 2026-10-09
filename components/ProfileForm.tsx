@@ -70,7 +70,8 @@ export function ProfileForm() {
     <div className="mx-auto w-full max-w-lg flex-1 px-6 py-10">
       <h1 className="text-2xl font-semibold">Your profile</h1>
       <p className="mt-1 text-muted">
-        Other players see your display name, position, and bio on games you join.
+        Other players see your display name, position, and bio on games you
+        join.
       </p>
 
       <form
@@ -102,7 +103,11 @@ export function ProfileForm() {
           />
         </Field>
 
-        <Field id="email" label="Email" hint="Your email can't be changed here.">
+        <Field
+          id="email"
+          label="Email"
+          hint="Your email can't be changed here."
+        >
           <input
             id="email"
             type="email"

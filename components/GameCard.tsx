@@ -49,7 +49,9 @@ export function GameCard({ game }: { game: Game }) {
       <p className="mt-1 font-medium">
         {formatDate(game.game_date)} at {formatTime(game.game_time)}
       </p>
-      {game.description && <p className="mt-2 text-muted">{game.description}</p>}
+      {game.description && (
+        <p className="mt-2 text-muted">{game.description}</p>
+      )}
 
       <dl className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
         <div className="flex gap-1">

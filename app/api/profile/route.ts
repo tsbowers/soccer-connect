@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  getProfileById,
-  updateProfile,
-} from "@/app/lib/server/profile";
+import { getProfileById, updateProfile } from "@/app/lib/server/profile";
 import { getSessionUserId } from "@/lib/session";
 import type { ProfileInput } from "@/lib/user-types";
 
@@ -21,7 +18,10 @@ export async function GET() {
 export async function PATCH(request: Request) {
   const userId = await getSessionUserId();
   if (!userId) {
-    return NextResponse.json({ error: "Sign in to continue." }, { status: 401 });
+    return NextResponse.json(
+      { error: "Sign in to continue." },
+      { status: 401 },
+    );
   }
 
   const body = await request.json().catch(() => null);

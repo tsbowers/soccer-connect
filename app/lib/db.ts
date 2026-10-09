@@ -15,19 +15,21 @@ function toTimeString(value: unknown): string {
   return value == null ? "" : String(value).slice(0, 5);
 }
 
-export function mapGame(row: any): Game {
+// Minimal shape of a joined pickup_game row coming back from Postgres.
+// Typed loosely because @vercel/postgres returns QueryResultRow.
+export function mapGame(row: Record<string, unknown>): Game {
   const capacity = Number(row.max_players);
   const attendeeCount = Number(row.attendee_count ?? 0);
   const status: GameStatus = attendeeCount >= capacity ? "full" : "open";
 
   return {
     id: String(row.id),
-    title: row.title,
-    location: row.location,
+    title: (row.title as string | null | undefined) ?? undefined,
+    location: (row.location as string | undefined) ?? "",
     game_date: toDateString(row.game_date),
     game_time: toTimeString(row.game_time),
-    organizer: row.organizer ?? "Unknown",
-    description: row.description ?? undefined,
+    organizer: (row.organizer as string | null | undefined) ?? "Unknown",
+    description: (row.description as string | null | undefined) ?? undefined,
     capacity,
     attendeeCount,
     status,
@@ -106,7 +108,8 @@ export async function updateGame(
     created_by: data.created_by ?? "",
   };
   if (!merged.created_by) {
-    const owner = await sql`SELECT created_by FROM pickup_game WHERE id = ${id};`;
+    const owner =
+      await sql`SELECT created_by FROM pickup_game WHERE id = ${id};`;
     merged.created_by = String(owner.rows[0]?.created_by ?? "");
   }
 
@@ -159,7 +162,10 @@ export async function joinGame(game_id: string, user_id: string) {
     WHERE id = ${game_id};
   `;
 
-  if (game.rows.length === 0 || Number(count.rows[0].count) >= game.rows[0].max_players) {
+  if (
+    game.rows.length === 0 ||
+    Number(count.rows[0].count) >= game.rows[0].max_players
+  ) {
     return null; // game full or missing
   }
 

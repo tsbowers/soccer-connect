@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
-import { FormError, primaryButtonClass } from "@/components/ui";
+import { FormError } from "@/components/ui";
 import { api, errorMessage } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import type { CreateGameInput } from "@/lib/types";
@@ -200,9 +200,8 @@ export function CreateGameForm() {
           role="status"
           className="mt-6 rounded-md border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
         >
-          Game created: {submitted.location} on{" "}
-          {submitted.game_date} at {submitted.game_time} (capacity{" "}
-          {submitted.capacity}).
+          Game created: {submitted.location} on {submitted.game_date} at{" "}
+          {submitted.game_time} (capacity {submitted.capacity}).
         </div>
       )}
     </div>
