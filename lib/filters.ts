@@ -1,5 +1,3 @@
-import type { Game } from "@/lib/types";
-
 export interface GameFilters {
   location: string;
   date: string; // YYYY-MM-DD, empty = any date
@@ -23,20 +21,6 @@ export function validateFilters(filters: GameFilters): string | null {
     return "The earliest start time must be before the latest start time.";
   }
   return null;
-}
-
-// All selected filters apply together (FR-005). "HH:MM" strings compare
-// correctly as text because they are zero-padded 24-hour times.
-export function filterGames(games: Game[], filters: GameFilters): Game[] {
-  const location = filters.location.trim().toLowerCase();
-  return games.filter((game) => {
-    if (location && !game.location.toLowerCase().includes(location))
-      return false;
-    if (filters.date && game.date !== filters.date) return false;
-    if (filters.timeFrom && game.startTime < filters.timeFrom) return false;
-    if (filters.timeTo && game.startTime > filters.timeTo) return false;
-    return true;
-  });
 }
 
 export function toQueryString(filters: GameFilters): string {

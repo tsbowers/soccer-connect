@@ -2,6 +2,7 @@ export type GameStatus = "open" | "full" | "canceled";
 
 export interface Game {
   id: string;
+  title?: string;
   location: string;
   game_date: string; // YYYY-MM-DD
   game_time: string; // 24h "HH:MM"

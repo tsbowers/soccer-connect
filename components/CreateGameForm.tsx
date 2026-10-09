@@ -1,6 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
+import { FormError, primaryButtonClass } from "@/components/ui";
+import { api, errorMessage } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 import type { CreateGameInput } from "@/lib/types";
 
 interface FormErrors {
@@ -19,10 +23,19 @@ function isInThePast(date: string, startTime: string): boolean {
 }
 
 export function CreateGameForm() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
   const [errors, setErrors] = useState<FormErrors>({});
+  const [formError, setFormError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState<CreateGameInput | null>(null);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  // Creating a game requires a signed-in organizer.
+  if (!loading && !user) {
+    router.replace("/login");
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
 
@@ -51,18 +64,34 @@ export function CreateGameForm() {
     }
 
     setErrors(nextErrors);
+    setFormError(null);
+    if (Object.keys(nextErrors).length > 0) return;
 
-    if (Object.keys(nextErrors).length === 0) {
-      // TODO: replace with a real POST to the Create Game API once
-      // issue #18 (Backend – Create Game API) is merged into main.
-      setSubmitted({ location, date, startTime, capacity, description });
+    const input: CreateGameInput = {
+      location,
+      game_date: date,
+      game_time: startTime,
+      capacity,
+      description,
+    };
+
+    setSubmitting(true);
+    try {
+      await api.createGame(input);
+      setSubmitted(input);
       event.currentTarget.reset();
+    } catch (error) {
+      setFormError(errorMessage(error));
+    } finally {
+      setSubmitting(false);
     }
   }
 
   return (
     <div className="mx-auto w-full max-w-lg">
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+        <FormError message={formError} />
+
         <div>
           <label
             htmlFor="location"
@@ -159,9 +188,10 @@ export function CreateGameForm() {
 
         <button
           type="submit"
+          disabled={submitting}
           className="mt-2 rounded-md bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700"
         >
-          Create Game
+          {submitting ? "Creating…" : "Create Game"}
         </button>
       </form>
 
@@ -170,10 +200,9 @@ export function CreateGameForm() {
           role="status"
           className="mt-6 rounded-md border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
         >
-          Game details captured locally: {submitted.location} on{" "}
-          {submitted.date} at {submitted.startTime} (capacity{" "}
-          {submitted.capacity}). This isn&apos;t saved to a database yet — that
-          lands once the Create Game API (#18) is merged.
+          Game created: {submitted.location} on{" "}
+          {submitted.game_date} at {submitted.game_time} (capacity{" "}
+          {submitted.capacity}).
         </div>
       )}
     </div>

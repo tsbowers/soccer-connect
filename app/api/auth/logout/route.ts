@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import { SESSION_COOKIE, clearSessionCookie } from "@/lib/session";
 
 export async function POST() {
-  return NextResponse.json({ success: true }, { status: 200 });
+  const response = NextResponse.json({ success: true }, { status: 200 });
+  return clearSessionCookie(response, SESSION_COOKIE);
 }
