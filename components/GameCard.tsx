@@ -1,6 +1,7 @@
 import type { Game } from "@/lib/types";
 
-function formatDate(date: string): string {
+function formatDate(date?: string): string {
+  if (!date) return "Unknown date";
   const [year, month, day] = date.split("-").map(Number);
   return new Date(year, month - 1, day).toLocaleDateString(undefined, {
     weekday: "short",
@@ -9,7 +10,8 @@ function formatDate(date: string): string {
   });
 }
 
-function formatTime(time: string): string {
+function formatTime(time?: string): string {
+  if (!time || !time.includes(":")) return "Unknown time";
   const [hour, minute] = time.split(":").map(Number);
   return new Date(2000, 0, 1, hour, minute).toLocaleTimeString(undefined, {
     hour: "numeric",
@@ -45,7 +47,7 @@ export function GameCard({ game }: { game: Game }) {
       </div>
 
       <p className="mt-1 font-medium">
-        {formatDate(game.date)} at {formatTime(game.startTime)}
+        {formatDate(game.game_date)} at {formatTime(game.game_time)}
       </p>
       {game.description && <p className="mt-2 text-muted">{game.description}</p>}
 

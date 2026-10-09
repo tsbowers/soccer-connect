@@ -3,8 +3,8 @@ export type GameStatus = "open" | "full" | "canceled";
 export interface Game {
   id: string;
   location: string;
-  date: string; // YYYY-MM-DD
-  startTime: string; // 24h "HH:MM"
+  game_date: string; // YYYY-MM-DD
+  game_time: string; // 24h "HH:MM"
   organizer: string;
   description?: string;
   capacity: number;
@@ -14,8 +14,8 @@ export interface Game {
 
 export interface CreateGameInput {
   location: string;
-  date: string;
-  startTime: string;
+  game_date: string;
+  game_time: string;
   capacity: number;
   description?: string;
 }
