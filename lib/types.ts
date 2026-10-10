@@ -7,6 +7,7 @@ export interface Game {
   game_date: string; // YYYY-MM-DD
   game_time: string; // 24h "HH:MM"
   organizer: string;
+  organizerId: string; // signed-in user id of whoever created the game
   description?: string;
   capacity: number;
   attendeeCount: number;

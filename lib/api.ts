@@ -83,7 +83,15 @@ export const api = {
     request<Game[]>(`/api/games${toQueryString(filters)}`),
 
   createGame: (input: CreateGameInput): Promise<Game> =>
-    post<Game>("/api/games", input),
+      post<Game>("/api/games", input),
+
+  getGame: (id: string): Promise<Game> => request<Game>(`/api/games/${id}`),
+
+  updateGame: (id: string, input: CreateGameInput): Promise<Game> =>
+      request<Game>(`/api/games/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(input),
+      }),
 };
 
 export function errorMessage(error: unknown): string {

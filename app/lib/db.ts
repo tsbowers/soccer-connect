@@ -29,6 +29,7 @@ export function mapGame(row: Record<string, unknown>): Game {
     game_date: toDateString(row.game_date),
     game_time: toTimeString(row.game_time),
     organizer: (row.organizer as string | null | undefined) ?? "Unknown",
+    organizerId: String(row.created_by ?? ""),
     description: (row.description as string | null | undefined) ?? undefined,
     capacity,
     attendeeCount,
