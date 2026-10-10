@@ -84,6 +84,13 @@ export const api = {
 
   createGame: (input: CreateGameInput): Promise<Game> =>
     post<Game>("/api/games", input),
+
+  // Both resolve to the updated game so the UI can refresh its count.
+  joinGame: (gameId: string): Promise<Game> =>
+    post<Game>(`/api/games/${gameId}/join`),
+
+  leaveGame: (gameId: string): Promise<Game> =>
+    request<Game>(`/api/games/${gameId}/join`, { method: "DELETE" }),
 };
 
 export function errorMessage(error: unknown): string {

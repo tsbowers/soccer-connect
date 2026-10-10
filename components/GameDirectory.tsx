@@ -5,6 +5,7 @@ import { GameCard } from "@/components/GameCard";
 import { GameFiltersForm } from "@/components/GameFiltersForm";
 import { secondaryButtonClass } from "@/components/ui";
 import { errorMessage, api } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 import {
   EMPTY_FILTERS,
   hasActiveFilters,
@@ -22,10 +23,12 @@ export function GameDirectory() {
   const [filters, setFilters] = useState<GameFilters>(EMPTY_FILTERS);
   const [attempt, setAttempt] = useState(0);
   const [result, setResult] = useState<Result | null>(null);
+  const { user } = useAuth();
 
   // Results are tagged with the request that produced them, so "loading" is
   // simply "the latest result doesn't match the current request".
-  const key = `${attempt}:${JSON.stringify(filters)}`;
+  // Includes the user so `joined` refreshes after logging in or out.
+  const key = `${attempt}:${user?.id ?? "anon"}:${JSON.stringify(filters)}`;
   const loading = result?.key !== key;
 
   useEffect(() => {
@@ -43,6 +46,18 @@ export function GameDirectory() {
       cancelled = true;
     };
   }, [key, filters]);
+
+  // Swap in the game returned by join/leave so its count updates in place.
+  function handleGameChange(updated: Game) {
+    setResult((current) =>
+      current?.games
+        ? {
+            ...current,
+            games: current.games.map((g) => (g.id === updated.id ? updated : g)),
+          }
+        : current,
+    );
+  }
 
   const games = result?.games ?? [];
   const filtered = hasActiveFilters(filters);
@@ -105,7 +120,11 @@ export function GameDirectory() {
             </p>
             <ul className="grid gap-4 sm:grid-cols-2">
               {games.map((game) => (
-                <GameCard key={game.id} game={game} />
+                <GameCard
+                  key={game.id}
+                  game={game}
+                  onGameChange={handleGameChange}
+                />
               ))}
             </ul>
           </>
