@@ -2,7 +2,7 @@
 // module only, so all HTTP details live here.
 import { toQueryString } from "@/lib/filters";
 import type { GameFilters } from "@/lib/filters";
-import type { CreateGameInput, Game } from "@/lib/types";
+import type { Attendee, CreateGameInput, Game } from "@/lib/types";
 import type {
   LoginInput,
   ProfileInput,
@@ -84,6 +84,8 @@ export const api = {
 
   createGame: (input: CreateGameInput): Promise<Game> =>
     post<Game>("/api/games", input),
+  getGameAttendees: (id: string): Promise<Attendee[]> =>
+    request<Attendee[]>(`/api/games/${id}/players`),
 };
 
 export function errorMessage(error: unknown): string {

@@ -1,5 +1,15 @@
 import { NextResponse } from "next/server";
-import { joinGame, leaveGame } from "@/app/lib/db";
+
+import { getGameAttendees, joinGame, leaveGame } from "@/app/lib/db";
+
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  const attendees = await getGameAttendees(id);
+  return NextResponse.json(attendees, { status: 200 });
+}
 
 export async function POST(
   request: Request,
