@@ -11,6 +11,7 @@ export interface Game {
   capacity: number;
   attendeeCount: number;
   status: GameStatus;
+  joined?: boolean; // true when the signed-in user is attending
 }
 
 export interface CreateGameInput {

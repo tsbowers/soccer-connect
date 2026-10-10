@@ -10,7 +10,8 @@ export async function GET(request: Request) {
   const timeFrom = searchParams.get("timeFrom");
   const timeTo = searchParams.get("timeTo");
 
-  let games = await getGames();
+  const userId = await getSessionUserId();
+  let games = await getGames(userId);
 
   if (location) {
     games = games.filter((game) =>

@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { getGameById, updateGame, deleteGame } from "@/app/lib/db";
+import { getSessionUserId } from "@/lib/session";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const game = await getGameById(id);
+  const game = await getGameById(id, await getSessionUserId());
   if (!game) {
     return NextResponse.json({ error: "Game not found" }, { status: 404 });
   }

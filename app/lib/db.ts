@@ -33,13 +33,16 @@ export function mapGame(row: Record<string, unknown>): Game {
     capacity,
     attendeeCount,
     status,
+    joined: Boolean(row.joined),
   };
 }
 
 // Get all games, newest first.
-export async function getGames(): Promise<Game[]> {
+// `userId` (optional) fills in `joined` for the signed-in user.
+export async function getGames(userId?: string | null): Promise<Game[]> {
   const result = await sql`
-    SELECT p.*, u.name AS organizer, COUNT(gp.id)::int AS attendee_count
+    SELECT p.*, u.name AS organizer, COUNT(gp.id)::int AS attendee_count,
+      COALESCE(BOOL_OR(gp.user_id = ${userId ?? null}), false) AS joined
     FROM pickup_game p
     LEFT JOIN users u ON u.id = p.created_by
     LEFT JOIN game_player gp ON gp.game_id = p.id
@@ -50,9 +53,13 @@ export async function getGames(): Promise<Game[]> {
   return result.rows.map(mapGame);
 }
 
-export async function getGameById(id: string): Promise<Game | null> {
+export async function getGameById(
+  id: string,
+  userId?: string | null,
+): Promise<Game | null> {
   const result = await sql`
-    SELECT p.*, u.name AS organizer, COUNT(gp.id)::int AS attendee_count
+    SELECT p.*, u.name AS organizer, COUNT(gp.id)::int AS attendee_count,
+      COALESCE(BOOL_OR(gp.user_id = ${userId ?? null}), false) AS joined
     FROM pickup_game p
     LEFT JOIN users u ON u.id = p.created_by
     LEFT JOIN game_player gp ON gp.game_id = p.id
