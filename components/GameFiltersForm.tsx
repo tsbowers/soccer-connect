@@ -68,14 +68,21 @@ export function GameFiltersForm({ applied, onApply }: GameFiltersFormProps) {
             className={inputClass}
           />
         </Field>
-        <Field id="filter-time-from" label="Earliest start" error={error ?? undefined}>
+        <Field
+          id="filter-time-from"
+          label="Earliest start"
+          error={error ?? undefined}
+        >
           <input
             id="filter-time-from"
             type="time"
             value={draft.timeFrom}
             onChange={(event) => update("timeFrom", event.target.value)}
             aria-invalid={Boolean(error)}
-            aria-describedby={describedBy("filter-time-from", error ?? undefined)}
+            aria-describedby={describedBy(
+              "filter-time-from",
+              error ?? undefined,
+            )}
             className={inputClass}
           />
         </Field>

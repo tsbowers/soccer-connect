@@ -1,9 +1,8 @@
 // Typed client for the endpoints in spec.md. Pages and components call this
-// module only, so switching from the mock to the real API changes nothing else.
+// module only, so all HTTP details live here.
 import { toQueryString } from "@/lib/filters";
 import type { GameFilters } from "@/lib/filters";
-import { ApiError, mockApi } from "@/lib/mock-api";
-import type { Game } from "@/lib/types";
+import type { CreateGameInput, Game } from "@/lib/types";
 import type {
   LoginInput,
   ProfileInput,
@@ -11,9 +10,14 @@ import type {
   User,
 } from "@/lib/user-types";
 
-export { ApiError };
-
-const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API !== "false";
+export class ApiError extends Error {
+  status: number;
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
 
 const NETWORK_MESSAGE =
   "Can't reach the server. Check your connection and try again.";
@@ -52,20 +56,17 @@ const post = <T>(path: string, body?: unknown) =>
 
 export const api = {
   signup: (input: SignupInput): Promise<User> =>
-    USE_MOCK ? mockApi.signup(input) : post("/api/auth/signup", input),
+    post<User>("/api/auth/signup", input),
 
   login: (input: LoginInput): Promise<User> =>
-    USE_MOCK ? mockApi.login(input) : post("/api/auth/login", input),
+    post<User>("/api/auth/login", input),
 
-  logout: (): Promise<void> =>
-    USE_MOCK ? mockApi.logout() : post("/api/auth/logout"),
+  logout: (): Promise<void> => post<void>("/api/auth/logout"),
 
   // Resolves to null when nobody is signed in.
   async getCurrentUser(): Promise<User | null> {
     try {
-      return USE_MOCK
-        ? await mockApi.getProfile()
-        : await request<User>("/api/profile");
+      return await request<User | null>("/api/auth/current");
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) return null;
       throw error;
@@ -73,17 +74,24 @@ export const api = {
   },
 
   updateProfile: (input: ProfileInput): Promise<User> =>
-    USE_MOCK
-      ? mockApi.updateProfile(input)
-      : request<User>("/api/profile", {
-          method: "PATCH",
-          body: JSON.stringify(input),
-        }),
+    request<User>("/api/profile", {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    }),
 
   listGames: (filters: GameFilters): Promise<Game[]> =>
-    USE_MOCK
-      ? mockApi.listGames(filters)
-      : request<Game[]>(`/api/games${toQueryString(filters)}`),
+    request<Game[]>(`/api/games${toQueryString(filters)}`),
+
+  createGame: (input: CreateGameInput): Promise<Game> =>
+      post<Game>("/api/games", input),
+
+  getGame: (id: string): Promise<Game> => request<Game>(`/api/games/${id}`),
+
+  updateGame: (id: string, input: CreateGameInput): Promise<Game> =>
+      request<Game>(`/api/games/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(input),
+      }),
 };
 
 export function errorMessage(error: unknown): string {

@@ -34,9 +34,13 @@ export function SiteNav() {
           {!loading && user && (
             <>
               <Link href="/profile" className={linkClass}>
-                {user.displayName}
+                {user.name}
               </Link>
-              <button type="button" onClick={handleLogout} className={linkClass}>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className={linkClass}
+              >
                 Log out
               </button>
             </>

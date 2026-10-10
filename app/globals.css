@@ -10,13 +10,13 @@
   --background: #f0fdf4; /* Soft Background */
   --foreground: #1f2937; /* Dark Neutral */
   --surface: #ffffff;
-  --line: #bbf7d0;      /* light green border */
+  --line: #bbf7d0; /* light green border */
   --muted: #465850;
-  --turf: #16a34a;      /* Primary Green */
+  --turf: #16a34a; /* Primary Green */
   --turf-dark: #15803d; /* Primary Green, hover/pressed */
   --turf-text: #15803d; /* green-700 reads better on light bg */
-  --accent: #22c55e;    /* Accent Green */
-  --danger: #dc2626;    /* destructive actions (Cancel Game) */
+  --accent: #22c55e; /* Accent Green */
+  --danger: #dc2626; /* destructive actions (Cancel Game) */
 }
 
 @theme inline {
@@ -42,7 +42,7 @@
     --surface: #131c18;
     --line: #2f4437;
     --muted: #c3d2c9; /* lighter so paragraph text stays crisp on dark */
-    --turf: #22c55e;    /* accent green pops on dark */
+    --turf: #22c55e; /* accent green pops on dark */
     --turf-dark: #16a34a;
     --turf-text: #6fcf9b;
     --accent: #4ade80;
