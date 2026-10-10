@@ -151,39 +151,27 @@ export async function joinGame(game_id: string, user_id: string) {
     return existing.rows[0];
   }
 
-  // Check if game is full before attempting to join.
-  const count = await sql`
-    SELECT COUNT(*) FROM game_player
-    WHERE game_id = ${game_id};
-  `;
-
-  const game = await sql`
-    SELECT max_players FROM pickup_game
-    WHERE id = ${game_id};
-  `;
-
-  if (
-    game.rows.length === 0 ||
-    Number(count.rows[0].count) >= game.rows[0].max_players
-  ) {
-    return null; // game full or missing
-  }
-
-  // Insert, relying on the DB constraint as the real safety net for the
-  // race where two requests both pass the checks above at the same time.
+  // Atomic capacity check + insert: FOR UPDATE locks the game's row so
+  // two concurrent join attempts for the same game can't both pass the
+  // capacity check when there's exactly one spot left. ON CONFLICT still
+  // covers the duplicate-join race from a user joining twice at once.
   const result = await sql`
     INSERT INTO game_player (game_id, user_id, status, joined_at)
-    VALUES (${game_id}, ${user_id}, 'joined', NOW())
-    ON CONFLICT (game_id, user_id) DO NOTHING
-    RETURNING *;
+    SELECT ${game_id}, ${user_id}, 'joined', NOW()
+    FROM pickup_game p
+    WHERE p.id = ${game_id}
+      AND (
+            SELECT COUNT(*) FROM game_player gp WHERE gp.game_id = p.id
+          ) < p.max_players
+      FOR UPDATE OF p
+          ON CONFLICT (game_id, user_id) DO NOTHING
+            RETURNING *;
   `;
 
   if (result.rows.length === 0) {
-    const existingAfterRace = await sql`
-      SELECT * FROM game_player
-      WHERE game_id = ${game_id} AND user_id = ${user_id};
-    `;
-    return existingAfterRace.rows[0] ?? null;
+    // Game missing, full, or we lost a race for the last spot — all three
+    // look the same from here, so the caller just sees "couldn't join."
+    return null;
   }
 
   return result.rows[0];
