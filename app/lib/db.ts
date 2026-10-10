@@ -1,5 +1,6 @@
 import { sql } from "@vercel/postgres";
-import type { Game, GameStatus } from "@/lib/types";
+
+import type { Attendee, Game, GameStatus } from "@/lib/types";
 
 // Rows come back from Postgres with Date objects for date/timestamp columns
 // and "HH:MM:SS" strings for time columns; the API returns plain strings.
@@ -141,17 +142,16 @@ export async function deleteGame(id: string): Promise<boolean> {
 
 // Join a game.
 export async function joinGame(game_id: string, user_id: string) {
-  // Check if already joined.
+  // Already joined? Return the existing row without re-checking capacity.
   const existing = await sql`
     SELECT * FROM game_player
     WHERE game_id = ${game_id} AND user_id = ${user_id};
   `;
-
   if (existing.rows.length > 0) {
-    return existing.rows[0]; // already joined
+    return existing.rows[0];
   }
 
-  // Check if game is full.
+  // Check if game is full before attempting to join.
   const count = await sql`
     SELECT COUNT(*) FROM game_player
     WHERE game_id = ${game_id};
@@ -169,12 +169,22 @@ export async function joinGame(game_id: string, user_id: string) {
     return null; // game full or missing
   }
 
-  // Insert player.
+  // Insert, relying on the DB constraint as the real safety net for the
+  // race where two requests both pass the checks above at the same time.
   const result = await sql`
     INSERT INTO game_player (game_id, user_id, status, joined_at)
     VALUES (${game_id}, ${user_id}, 'joined', NOW())
+    ON CONFLICT (game_id, user_id) DO NOTHING
     RETURNING *;
   `;
+
+  if (result.rows.length === 0) {
+    const existingAfterRace = await sql`
+      SELECT * FROM game_player
+      WHERE game_id = ${game_id} AND user_id = ${user_id};
+    `;
+    return existingAfterRace.rows[0] ?? null;
+  }
 
   return result.rows[0];
 }
@@ -188,4 +198,25 @@ export async function leaveGame(game_id: string, user_id: string) {
   `;
 
   return result.rows[0] || null;
+}
+
+// Get the list of players attending a game, oldest join first.
+export async function getGameAttendees(gameId: string): Promise<Attendee[]> {
+  const result = await sql`
+    SELECT u.id, u.name, gp.joined_at, gp.status
+    FROM game_player gp
+    JOIN users u ON u.id = gp.user_id
+    WHERE gp.game_id = ${gameId}
+    ORDER BY gp.joined_at;
+  `;
+
+  return result.rows.map((row) => ({
+    id: String(row.id),
+    name: (row.name as string | undefined) ?? "Unknown",
+    joinedAt:
+      row.joined_at instanceof Date
+        ? row.joined_at.toISOString()
+        : String(row.joined_at),
+    status: (row.status as string | undefined) ?? "joined",
+  }));
 }
