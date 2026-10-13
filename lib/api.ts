@@ -2,7 +2,6 @@
 // module only, so switching from the mock to the real API changes nothing else.
 import { toQueryString } from "@/lib/filters";
 import type { GameFilters } from "@/lib/filters";
-import { ApiError, mockApi } from "@/lib/mock-api";
 import type { Game } from "@/lib/types";
 import type {
   LoginInput,
