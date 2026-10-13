@@ -2,6 +2,7 @@
 
 import { JoinLeaveButton } from "@/components/JoinLeaveButton";
 import type { Game } from "@/lib/types";
+import Link from "next/link";
 
 function formatDate(date?: string): string {
   if (!date) return "Unknown date";
@@ -40,7 +41,9 @@ export function GameCard({ game, onGameChange }: GameCardProps) {
   return (
     <li className="card p-5">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="text-lg font-semibold">{game.location}</h3>
+        <Link href={`/games/${game.id}`} className="hover:underline">
+          <h3 className="text-lg font-semibold">{game.location}</h3>
+        </Link>
         {statusLabel && (
           <span
             className={
