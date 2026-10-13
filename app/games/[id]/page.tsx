@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
-import { getGameById } from "@/app/lib/db";
+
+import { getGameAttendees, getGameById } from "@/app/lib/db";
+import { formatDate, formatTime } from "@/lib/format";
 
 export default async function GameDetailsPage({
   params,
@@ -11,11 +13,13 @@ export default async function GameDetailsPage({
 
   if (!game) notFound();
 
+  const attendees = await getGameAttendees(id);
+
   return (
     <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
       <h1 className="text-2xl font-semibold">{game.location}</h1>
       <p className="mt-1 font-medium">
-        {game.game_date} at {game.game_time}
+        {formatDate(game.game_date)} at {formatTime(game.game_time)}
       </p>
       {game.description && (
         <p className="mt-2 text-muted">{game.description}</p>
@@ -37,6 +41,22 @@ export default async function GameDetailsPage({
           <dd>{game.status}</dd>
         </div>
       </dl>
+
+      <h2 className="mt-8 text-lg font-semibold">Players</h2>
+      {attendees.length === 0 ? (
+        <p className="mt-2 text-muted">No one has joined yet.</p>
+      ) : (
+        <ul className="mt-2 divide-y divide-black/10 dark:divide-white/10">
+          {attendees.map((attendee) => (
+            <li key={attendee.id} className="flex justify-between py-2 text-sm">
+              <span>{attendee.name}</span>
+              <span className="text-muted">
+                Joined {formatDate(attendee.joinedAt.slice(0, 10))}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
