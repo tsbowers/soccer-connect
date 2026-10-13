@@ -36,7 +36,11 @@ export function SiteNav() {
               <Link href="/profile" className={linkClass}>
                 {user.name}
               </Link>
-              <button type="button" onClick={handleLogout} className={linkClass}>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className={linkClass}
+              >
                 Log out
               </button>
             </>
@@ -48,7 +52,7 @@ export function SiteNav() {
               </Link>
               <Link
                 href="/signup"
-                className="rounded-md bg-turf px-3 py-2 text-sm font-medium text-white hover:bg-turf-dark"
+                className="btn-primary px-3 py-2 text-sm"
               >
                 Sign up
               </Link>

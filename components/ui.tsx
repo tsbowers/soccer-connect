@@ -43,7 +43,10 @@ export function Field({ id, label, error, hint, children }: FieldProps) {
         </p>
       )}
       {error && (
-        <p id={`${id}-error`} className="mt-1 text-sm text-red-700 dark:text-red-400">
+        <p
+          id={`${id}-error`}
+          className="mt-1 text-sm text-red-700 dark:text-red-400"
+        >
           {error}
         </p>
       )}

@@ -17,7 +17,7 @@
 
 **Required technology stack**: Next.js with App Router, TypeScript, and Tailwind CSS. The implementation plan MUST select compatible supporting services for authentication, persistent storage, and automated testing.
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Create an Account and Profile (Priority: P1)
 
@@ -109,7 +109,7 @@ As a player evaluating a game, I want to view its full details and attendees so 
 - An organizer attempts to edit or cancel a game after its start time.
 - A requested account, game, or attendee record does not exist or is not available to the requester.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -134,20 +134,20 @@ As a player evaluating a game, I want to view its full details and attendees so 
 
 The implementation plan MUST document request and response schemas for these resource behaviors. Protected endpoints MUST enforce the current authenticated user and organizer permissions.
 
-| Method | Endpoint | Purpose | Access |
-|--------|----------|---------|--------|
-| POST | `/api/auth/signup` | Create an account and start a session | Public |
-| POST | `/api/auth/login` | Authenticate a registered user | Public |
-| POST | `/api/auth/logout` | End the current session | Authenticated |
-| GET | `/api/profile` | Get the current user's profile | Authenticated |
-| PATCH | `/api/profile` | Update the current user's profile | Authenticated |
-| GET | `/api/games` | List future games with location, date, and time filters | Public |
-| POST | `/api/games` | Create a pickup game | Authenticated |
-| GET | `/api/games/{gameId}` | Get game details and attendees | Public |
-| PATCH | `/api/games/{gameId}` | Update an organizer's future game | Organizer |
-| DELETE | `/api/games/{gameId}` | Cancel an organizer's future game | Organizer |
-| POST | `/api/games/{gameId}/join` | Join an open game | Authenticated |
-| DELETE | `/api/games/{gameId}/join` | Leave a joined game | Authenticated |
+| Method | Endpoint                   | Purpose                                                 | Access        |
+| ------ | -------------------------- | ------------------------------------------------------- | ------------- |
+| POST   | `/api/auth/signup`         | Create an account and start a session                   | Public        |
+| POST   | `/api/auth/login`          | Authenticate a registered user                          | Public        |
+| POST   | `/api/auth/logout`         | End the current session                                 | Authenticated |
+| GET    | `/api/profile`             | Get the current user's profile                          | Authenticated |
+| PATCH  | `/api/profile`             | Update the current user's profile                       | Authenticated |
+| GET    | `/api/games`               | List future games with location, date, and time filters | Public        |
+| POST   | `/api/games`               | Create a pickup game                                    | Authenticated |
+| GET    | `/api/games/{gameId}`      | Get game details and attendees                          | Public        |
+| PATCH  | `/api/games/{gameId}`      | Update an organizer's future game                       | Organizer     |
+| DELETE | `/api/games/{gameId}`      | Cancel an organizer's future game                       | Organizer     |
+| POST   | `/api/games/{gameId}/join` | Join an open game                                       | Authenticated |
+| DELETE | `/api/games/{gameId}/join` | Leave a joined game                                     | Authenticated |
 
 ### Key Entities
 
@@ -156,7 +156,7 @@ The implementation plan MUST document request and response schemas for these res
 - **Attendance**: A relationship between one user and one game, including a unique player-game pairing and join timestamp.
 - **Session**: An authenticated login state associated with one user and an expiration time.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

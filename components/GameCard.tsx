@@ -1,3 +1,6 @@
+"use client";
+
+import { JoinLeaveButton } from "@/components/JoinLeaveButton";
 import type { Game } from "@/lib/types";
 
 function formatDate(date?: string): string {
@@ -25,7 +28,12 @@ const STATUS_LABEL: Record<Game["status"], string | null> = {
   canceled: "Canceled",
 };
 
-export function GameCard({ game }: { game: Game }) {
+interface GameCardProps {
+  game: Game;
+  onGameChange: (game: Game) => void;
+}
+
+export function GameCard({ game, onGameChange }: GameCardProps) {
   const statusLabel = STATUS_LABEL[game.status];
   const spotsLeft = game.capacity - game.attendeeCount;
 
@@ -49,7 +57,9 @@ export function GameCard({ game }: { game: Game }) {
       <p className="mt-1 font-medium">
         {formatDate(game.game_date)} at {formatTime(game.game_time)}
       </p>
-      {game.description && <p className="mt-2 text-muted">{game.description}</p>}
+      {game.description && (
+        <p className="mt-2 text-muted">{game.description}</p>
+      )}
 
       <dl className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
         <div className="flex gap-1">
@@ -58,13 +68,16 @@ export function GameCard({ game }: { game: Game }) {
         </div>
         <div className="flex gap-1">
           <dt className="text-muted">Players:</dt>
-          <dd>
+          <dd aria-live="polite">
             {game.attendeeCount} of {game.capacity}
             {game.status === "open" &&
               ` (${spotsLeft} ${spotsLeft === 1 ? "spot" : "spots"} left)`}
+            {game.joined && " · You're in"}
           </dd>
         </div>
       </dl>
+
+      <JoinLeaveButton game={game} onChange={onGameChange} />
     </li>
   );
 }
