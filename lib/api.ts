@@ -96,7 +96,7 @@ export const api = {
       body: JSON.stringify(input),
     }),
 
-  deleteGame: async (id: string): Promise<void> => {
+  cancelGame: async (id: string): Promise<void> => {
     await request<unknown>(`/api/games/${id}`, { method: "DELETE" });
   },
 

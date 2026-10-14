@@ -21,7 +21,11 @@ function toTimeString(value: unknown): string {
 export function mapGame(row: Record<string, unknown>): Game {
   const capacity = Number(row.max_players);
   const attendeeCount = Number(row.attendee_count ?? 0);
-  const status: GameStatus = attendeeCount >= capacity ? "full" : "open";
+  const status: GameStatus = row.canceled_at
+    ? "canceled"
+    : attendeeCount >= capacity
+      ? "full"
+      : "open";
 
   return {
     id: String(row.id),
@@ -137,12 +141,14 @@ export async function updateGame(
   return getGameById(id);
 }
 
-// Delete a game.
-export async function deleteGame(id: string): Promise<boolean> {
+// Cancel a game: marks canceled_at instead of deleting the row, so players
+// who already joined can still see it was canceled.
+export async function cancelGame(id: string): Promise<boolean> {
   const result = await sql`
-    DELETE FROM pickup_game
-    WHERE id = ${id}
-    RETURNING id;
+    UPDATE pickup_game
+    SET canceled_at = NOW()
+    WHERE id = ${id} AND canceled_at IS NULL
+      RETURNING id;
   `;
 
   return result.rows.length > 0;

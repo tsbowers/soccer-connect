@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { deleteGame, getGameById, updateGame } from "@/app/lib/db";
+import { cancelGame, getGameById, updateGame } from "@/app/lib/db";
 import { getSessionUserId } from "@/lib/session";
 
 type Params = { params: Promise<{ id: string }> };
@@ -90,13 +90,19 @@ export async function DELETE(_request: Request, { params }: Params) {
       { status: 403 },
     );
   }
+  if (existing.status === "canceled") {
+    return NextResponse.json(
+      { error: "This game was already canceled." },
+      { status: 409 },
+    );
+  }
 
-  const success = await deleteGame(id);
+  const success = await cancelGame(id);
   if (!success) {
     return NextResponse.json({ error: "Game not found" }, { status: 404 });
   }
   return NextResponse.json(
-    { message: "Game deleted successfully" },
+    { message: "Game canceled successfully" },
     { status: 200 },
   );
 }
