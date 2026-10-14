@@ -25,22 +25,22 @@ function hasStarted(date: string, time: string): boolean {
 export function DeleteGameButton({ game }: DeleteGameButtonProps) {
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  const [canceling, setCanceling] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Same rule as editing: a game that already started can't be canceled.
   const started = hasStarted(game.game_date, game.game_time);
 
-  async function handleDelete() {
-    setDeleting(true);
+  async function handleCancel() {
+    setCanceling(true);
     setError(null);
     try {
-      await api.deleteGame(game.id);
+      await api.cancelGame(game.id);
       router.push("/games");
       router.refresh();
     } catch (err) {
       setError(errorMessage(err));
-      setDeleting(false);
+      setCanceling(false);
     }
   }
 
@@ -55,7 +55,7 @@ export function DeleteGameButton({ game }: DeleteGameButtonProps) {
       <p className="mt-1 text-sm text-muted">
         {started
           ? "This game has already started, so it can no longer be canceled."
-          : "Canceling permanently removes the game and its player list."}
+          : "Canceling lets players know this game won't happen, and keeps the player list for reference."}
       </p>
 
       <div className="mt-3 space-y-3">
@@ -76,20 +76,20 @@ export function DeleteGameButton({ game }: DeleteGameButtonProps) {
             className="flex flex-wrap items-center gap-3"
           >
             <span className="text-sm font-medium">
-              Delete this game for good?
+              Cancel this game for all players?
             </span>
             <button
               type="button"
               className={dangerButtonClass}
-              disabled={deleting}
-              onClick={handleDelete}
+              disabled={canceling}
+              onClick={handleCancel}
             >
-              {deleting ? "Deleting…" : "Yes, delete it"}
+              {canceling ? "Canceling…" : "Yes, cancel it"}
             </button>
             <button
               type="button"
               className={secondaryButtonClass}
-              disabled={deleting}
+              disabled={canceling}
               onClick={() => setConfirming(false)}
             >
               Keep game
